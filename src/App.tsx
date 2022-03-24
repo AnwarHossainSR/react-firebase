@@ -18,12 +18,11 @@ const App = () => {
           await signOut(auth);
           return history.push("/email_verified");
         }
-        console.log(user);
       }
     });
 
     return unsubscribe;
-  }, []);
+  }, [history]);
   return (
     <>
       <Header />
