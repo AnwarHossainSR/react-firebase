@@ -1,7 +1,29 @@
-import { Route, Switch } from "react-router-dom";
+import {
+  onAuthStateChanged,
+  sendEmailVerification,
+  signOut,
+} from "firebase/auth";
+import { useEffect } from "react";
+import { Route, Switch, useHistory } from "react-router-dom";
 import Header from "./components/header";
+import { auth } from "./Firebase";
 import pageRender from "./pageRender";
 const App = () => {
+  const history = useHistory();
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        if (!user.emailVerified) {
+          await sendEmailVerification(user);
+          await signOut(auth);
+          return history.push("/email_verified");
+        }
+        console.log(user);
+      }
+    });
+
+    return unsubscribe;
+  }, []);
   return (
     <>
       <Header />
