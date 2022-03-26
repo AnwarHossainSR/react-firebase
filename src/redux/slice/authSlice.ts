@@ -1,11 +1,17 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { registerApi } from "redux/actions/authAtions";
-import { IRegister } from "types";
+import { loginApi, registerApi } from "redux/actions/authAtions";
+import { ILogin, IRegister } from "types";
 
 export const authRegister = createAsyncThunk(
   "auth/register",
   async (user: IRegister) => {
     return await registerApi(user);
+  }
+);
+export const authLogin = createAsyncThunk(
+  "auth/login",
+  async (user: ILogin) => {
+    return await loginApi(user);
   }
 );
 
@@ -29,12 +35,18 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(authRegister.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(authRegister.fulfilled, (state) => {
-        state.loading = false;
-      });
+      .addMatcher(
+        ({ type }) => type.startsWith("auth") && type.endsWith("/pending"),
+        (state) => {
+          state.loading = true;
+        }
+      )
+      .addMatcher(
+        ({ type }) => type.startsWith("auth") && type.endsWith("/fulfilled"),
+        (state) => {
+          state.loading = false;
+        }
+      );
   },
 });
 
